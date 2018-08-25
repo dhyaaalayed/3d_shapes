@@ -242,8 +242,6 @@ def create_one_small_star():
 		print('shifts_indices: ', shifts_indices)
 		if(nb_shifts > 0):
 			xy[shifts_indices] = get_shifted_points(shifts_indices, nb_points, r + shift_parameter, 0, 0) + np.random.uniform(low=-1.0, high=+1.0, size=(len(shifts_indices),)).reshape(-1, 1)
-		
-
 		xy = np.append(xy, [xy[0]], axis = 0) # close the circle
 		average_point = (xy[2] + xy[3]) / 2
 		average_point[1] += 0.3
@@ -252,104 +250,89 @@ def create_one_small_star():
 		x = xy[:,0]	
 		y = xy[:,1]		
 		out = xy
-		axarr[4, 1].plot(out[:, 0], out[:, 1])
-		#axarr[i + 1,j].scatter(out[:, 0], out[:, 1], c = 'green')
-		#axarr[4, 1].scatter(xy[shifts_indices, 0], xy[shifts_indices, 1], c = 'red')
-		axarr[4, 1].scatter(average_point[0], average_point[1], c = 'red')
+		# axarr[4, 1].plot(out[:, 0], out[:, 1])
+		# axarr[4, 1].scatter(average_point[0], average_point[1], c = 'red')
+	create_3d(out, save_dir + 'row_' + str(5) + 'colmn_' + str(2) + '.obj')
+	return out
 
-		create_3d(out, save_dir + 'row_' + str(5) + 'colmn_' + str(2) + '.obj')
-		#print('out: ', out)
-		#axarr[i,j].scatter(out[0], out[1])
-		
-
-		nb_points += 2
-		nb_shifts += 1 # this should has a random range
-		# if(np.random.randint(0, 1 ,1) == 0):
-		# 	signal = -1
-		# 	shift_parameter -= signal * shift_value # this should be smaller than rs
-		# elif(np.absolute(shift_parameter) < r):
-		# 	#signal = 1
-		# 	if(np.random.randint(0, 1 ,1) == 0):
-		# 		signal = -1
-		# 	shift_parameter -= signal * shift_value # this should be smaller than rs
-
-
-nb_colmns = 5
-nb_rows = 3
-nb_lines = 0
-f, axarr = plt.subplots(nb_rows + 4,nb_colmns, figsize=(20,2.4 * (nb_rows + 4)    ))
-shift_value = 0.1
-save_dir = 'new_shapes/'
-
-for i in range(nb_rows):
+main = False
+if main == True:
+	nb_colmns = 5
+	nb_rows = 3
+	nb_lines = 0
+	f, axarr = plt.subplots(nb_rows + 4,nb_colmns, figsize=(20,2.4 * (nb_rows + 4)    ))
+	shift_value = 0.1
+	save_dir = 'new_shapes/'
 	
-	nb_points = 6
-	nb_shifts = 1
-	shift_parameter = 0.2
-	r = 1
-	for j in range(nb_colmns):
-		xy = get_points(0, 0, r, nb_points)
-		xy = np.array(xy)
-		# choose random of shifts satrting with 0
-		shifts_indices = np.random.randint(0, nb_points ,nb_shifts) # choose random points
-		if(nb_shifts > 0):
-			xy[shifts_indices] = get_shifted_points(shifts_indices, nb_points, r + shift_parameter, 0, 0)
-		xy = np.append(xy, [xy[0]], axis = 0) # close the circle
-
-
-		x = xy[:,0]
-		y = xy[:,1]
-		if i == nb_rows - 1: # just lines
-			# shift_value = 0.2
-			out = xy
-		else:
-			if(nb_lines < 1): # normal circles
-				tck, u = interpolate.splprep([x, y], s=0)
-				unew = np.arange(0, 1.01, 0.01) # from 0 to 1.01 with step 0.01 [the number of points]
-				out = interpolate.splev(unew, tck) # a circle of 101 points
-				out = np.array(out).T
-				# print('last out: ', out)
-			else: # lines and curves
-				#out = add_random_lines(xy, nb_lines)
-				#out = curve_lines_array(xy, nb_lines)
-				out = new_add_random_lines(xy, nb_lines)
-				# out_np = np.array(out[0]).T # transpose
-				# for k in range(1, len(out)):
-				# 	out_np = np.concatenate((out_np, np.array(out[k]).T), axis = 0)
-				# out = out_np
-		#axarr[i,j].plot(x, y, 'x', out[:, 0], out[:, 1])
-		axarr[i,j].plot(out[:, 0], out[:, 1])
-		axarr[i,j].scatter(xy[shifts_indices, 0], xy[shifts_indices, 1], c = 'red')
-
-		create_3d(out, save_dir + 'row_' + str(i + 1) + 'colmn_' + str(j + 1) + '.obj')
-		#print('out: ', out)
-		#axarr[i,j].scatter(out[0], out[1])
+	for i in range(nb_rows):
 		
-
-		nb_points += 1
-		if j < 3:
-			nb_shifts += 1
-		if i == nb_rows - 1:
-			nb_shifts += 1
-			signal = 1
-			if(np.random.randint(0, 1 ,1) == 0):
-				signal = -1
-			shift_parameter -= signal * shift_value # this should be smaller than rs
-		elif(np.absolute(shift_parameter) < r):
-			signal = 1
-			if(np.random.randint(0, 1 ,1) == 0):
-				signal = -1
-			shift_parameter -= signal * shift_value # this should be smaller than rs
-	nb_lines += 1
-## stars code:
-create_stars()
-create_small_stars()
-get_squares_row(axarr, 5)
-get_moreno_row(axarr, 6)
-create_one_small_star()
-
-plt.savefig('shapes.jpg')
-plt.show()
+		nb_points = 6
+		nb_shifts = 1
+		shift_parameter = 0.2
+		r = 1
+		for j in range(nb_colmns):
+			xy = get_points(0, 0, r, nb_points)
+			xy = np.array(xy)
+			# choose random of shifts satrting with 0
+			shifts_indices = np.random.randint(0, nb_points ,nb_shifts) # choose random points
+			if(nb_shifts > 0):
+				xy[shifts_indices] = get_shifted_points(shifts_indices, nb_points, r + shift_parameter, 0, 0)
+			xy = np.append(xy, [xy[0]], axis = 0) # close the circle
+	
+	
+			x = xy[:,0]
+			y = xy[:,1]
+			if i == nb_rows - 1: # just lines
+				# shift_value = 0.2
+				out = xy
+			else:
+				if(nb_lines < 1): # normal circles
+					tck, u = interpolate.splprep([x, y], s=0)
+					unew = np.arange(0, 1.01, 0.01) # from 0 to 1.01 with step 0.01 [the number of points]
+					out = interpolate.splev(unew, tck) # a circle of 101 points
+					out = np.array(out).T
+					# print('last out: ', out)
+				else: # lines and curves
+					#out = add_random_lines(xy, nb_lines)
+					#out = curve_lines_array(xy, nb_lines)
+					out = new_add_random_lines(xy, nb_lines)
+					# out_np = np.array(out[0]).T # transpose
+					# for k in range(1, len(out)):
+					# 	out_np = np.concatenate((out_np, np.array(out[k]).T), axis = 0)
+					# out = out_np
+			#axarr[i,j].plot(x, y, 'x', out[:, 0], out[:, 1])
+			axarr[i,j].plot(out[:, 0], out[:, 1])
+			axarr[i,j].scatter(xy[shifts_indices, 0], xy[shifts_indices, 1], c = 'red')
+	
+			create_3d(out, save_dir + 'row_' + str(i + 1) + 'colmn_' + str(j + 1) + '.obj')
+			#print('out: ', out)
+			#axarr[i,j].scatter(out[0], out[1])
+			
+	
+			nb_points += 1
+			if j < 3:
+				nb_shifts += 1
+			if i == nb_rows - 1:
+				nb_shifts += 1
+				signal = 1
+				if(np.random.randint(0, 1 ,1) == 0):
+					signal = -1
+				shift_parameter -= signal * shift_value # this should be smaller than rs
+			elif(np.absolute(shift_parameter) < r):
+				signal = 1
+				if(np.random.randint(0, 1 ,1) == 0):
+					signal = -1
+				shift_parameter -= signal * shift_value # this should be smaller than rs
+		nb_lines += 1
+	## stars code:
+	create_stars()
+	create_small_stars()
+	get_squares_row(axarr, 5)
+	get_moreno_row(axarr, 6)
+	create_one_small_star()
+	
+	plt.savefig('shapes.jpg')
+	plt.show()
 
 
 

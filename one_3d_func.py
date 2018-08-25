@@ -144,7 +144,25 @@ def create_uvmap(surface): # make this one for the whole side surface!
 	#### end to try
 	return side_surface, normal_surface1, normal_surface2 # delete the closing circle point
 
-def create_3d(surface1, save_name = 'first_3d.obj'):
+def create_3d_for_list(surface1_list, save_name = 'first_complex.obj'):
+	# get all vertices, uv_map vertices and all triangles, then concatenate them together
+	surface1 = surface1_list[0]
+	create_3d(surface1, 'alone.obj')
+	surfaces_vertices, surfaces_all_triangles, surfaces_uv_vertices = create_single_3d(surface1)
+	last_vertices_index = len(surfaces_vertices) # not sure for +1 or +2 or +0...
+	print('first object vertices: ', surfaces_vertices)
+	for i in range(1, len(surface1_list)):
+		surface1 = surface1_list[i]
+		print('last_vertices_index: ', last_vertices_index)
+		vertices, all_triangles, uv_vertices = create_single_3d(surface1, start_index = last_vertices_index)
+		print('second object vertices: ', vertices)
+		surfaces_vertices = np.concatenate([surfaces_vertices, vertices], axis = 0)
+		surfaces_all_triangles = np.concatenate([surfaces_all_triangles, all_triangles], axis = 0)
+		surfaces_uv_vertices = np.concatenate([surfaces_uv_vertices, uv_vertices], axis = 0)
+		last_vertices_index += len(vertices)
+	write_on_obj(surfaces_vertices, surfaces_all_triangles, surfaces_uv_vertices, save_name)
+
+def create_3d(surface1, save_name = 'first_3d.obj'): # this function should return only what we need for creating 3d
 	third_dimension_bias = 0.9 # must stay less than 1
 	surface2 = np.copy(surface1)
 	surface1 *= 0.85
@@ -200,6 +218,7 @@ def create_3d(surface1, save_name = 'first_3d.obj'):
 		## End 2d Phase
 	surface2 = np.append(surface2, -np.ones((len(surface2), 1)) + third_dimension_bias, axis = 1)
 	first_index = surface1[-2][3] + 1 # start counting from the last index of the first surface
+	print('first_index of the surface2 [the buttom surface]: ', first_index)
 	indices = np.arange(first_index, first_index + len(surface2)).reshape(-1, +1)
 	surface2 = np.append(surface2, indices, axis = 1) # add the indices
 	surface2[len(surface2) - 1][3] = first_index + 1 # the repeated vertex
@@ -253,41 +272,94 @@ def create_3d(surface1, save_name = 'first_3d.obj'):
 	uv_vertices = np.concatenate([uv_surface1[:-1], uv_surface2[:-1], uv_upper_side_points, uv_lower_side_points], axis = 0)
 	# plot_triangles(all_triangles, fig, ax)
 	write_on_obj(Vertices, all_triangles, uv_vertices, save_name)
+
+
+def create_single_3d(surface1, start_index = 0): # this function should return only what we need for creating 3d
+	third_dimension_bias = 0.9 # must stay less than 1
+	surface2 = np.copy(surface1)
+	surface1 *= 0.85
+	surface1 = np.append(surface1, [surface1[0]], axis = 0) # to close the circle: still important for the last triangle!
+	surface1 = np.append(np.array([[0, 0]]), surface1, axis = 0) # add the origin as the first vertex
+	surface1_for_uvmap = np.copy(surface1)
 	
-	#write_on_obj(Vertices, side_surface_triangles)
-	
+	## UV_MAP Call
 	#
-	## End Vertex list
+	uv_side_surface, uv_surface1, uv_surface2 = create_uvmap(surface1_for_uvmap)
+	split_side_index = len(uv_side_surface) // 2
+	uv_upper_side_points = np.copy(uv_side_surface[:split_side_index])
+	uv_lower_side_points = np.copy(uv_side_surface[split_side_index:])
+	#
+	## End UV_MAP Call
 	
-	# plt.show()
+	surface1 = np.append(surface1, np.ones((len(surface1), 1)) - third_dimension_bias, axis = 1) # adding the third dimension
+	indices = np.arange(1, len(surface1) + 1).reshape(-1, +1)
+	surface1 = np.append(surface1, indices, axis = 1) # add the indices
+	surface1[len(surface1) - 1][3] = 2 # Set the same index for the repeated vertex; the repeated vertex is the closing circle point
+	surface1[:, 3] += start_index
+	# uv_map
+	uv_map_indices = np.arange(1, len(uv_surface1) + 1).reshape(-1, +1)
+	uv_surface1 = np.append(uv_surface1, uv_map_indices, axis = 1)
+	uv_surface1[-1][2] = 2 # the repeated vertex in the uv map
+	# end uv_map
+	surface1_triangles = get_circle_Triangles(surface1, surface1[0], uv_surface1, uv_surface1[0])	
+	#
+	# End Creating The First Surface
+	
+	# Creating The Second Surface
+	#
+		## 2d Phase
+	# surface2 = get_points(0, 0, 1, surface_points)
+	surface2 = np.append(surface2, [surface2[0]], axis = 0)
+	surface2 = np.append(np.array([[0, 0]]), surface2, axis = 0)
+		## End 2d Phase
+	surface2 = np.append(surface2, -np.ones((len(surface2), 1)) + third_dimension_bias, axis = 1)
+	first_index = surface1[-2][3] + 1 # start counting from the last index of the first surface
+	indices = np.arange(first_index, first_index + len(surface2)).reshape(-1, +1)
+	surface2 = np.append(surface2, indices, axis = 1) # add the indices
+	surface2[len(surface2) - 1][3] = first_index + 1 # the repeated vertex
+	#surface2[:, 3] += start_index
+	
+	# uv_map
+	#
+	uv_map_indices = np.copy(indices)
+	uv_surface2 = np.append(uv_surface2, uv_map_indices, axis = 1)
+	uv_surface2[-1][2] = first_index + 1
+	#
+	# end uv_map
+	
+	surface2_triangles = get_circle2_Triangles(surface2, surface2[0], uv_surface2, uv_surface2[0])	
+	#
+	# End Creating The Second Surface
+	
+	# Adding The Side Surface
+	#
+	## uv_map: indexing the upper side points
+	first_index = uv_map_indices[-1]
+	uv_map_indices = np.arange(first_index, first_index + len(uv_upper_side_points)).reshape(-1, +1)
+	uv_upper_side_points = np.append(uv_upper_side_points, uv_map_indices, axis = 1)
+		## uv_map: end indexing the upper side points
+	
+		## uv_map: indexing the lower side points
+	first_index = uv_map_indices[-1] + 1
+	uv_map_indices = np.arange(first_index, first_index + len(uv_lower_side_points)).reshape(-1, +1)
+	uv_lower_side_points = np.append(uv_lower_side_points, uv_map_indices, axis = 1)
+		## uv_map: end indexing the lower side points
+	side_surface_triangles = get_side_surface_triangles(surface1, surface2, 
+		uv_upper_side_points, uv_lower_side_points)
+	#
+	# End Adding The Side Surface
+	
+	## Vertex list
+	#
+	Vertices = np.concatenate([surface1[:-1], surface2[:-1]], axis = 0) # plot all the vertices
+	all_triangles = np.concatenate([surface1_triangles, surface2_triangles, side_surface_triangles],
+		axis = 0)
+	#uv_vertices = np.concatenate([uv_surface1[:-1], uv_surface2[:-1], uv_upper_side_points, uv_lower_side_points], axis = 0)
+	uv_vertices = np.concatenate([uv_surface1[:-1], uv_surface2[:-1], uv_upper_side_points, uv_lower_side_points], axis = 0)
+	return Vertices, all_triangles, uv_vertices
 
 
-# fig = plt.figure()
-# ax = fig.add_subplot(111, projection='3d')
-# ax.set_prop_cycle(cycler('color', ['c', 'm', 'y', 'k']) +
-#                    cycler('lw', [1, 2, 3, 4]))
 
-
-
-
-
-
-
-
-# surface_points = 20
-# nb_points = 3
-
-
-# nb_shifts = 0
-# r = 1
-# shift_parameter = 0.3
-# # Creating The First Surface:
-# #
-# surface1 = get_points(0, 0, 1, surface_points)
-# shifts_indices = np.random.randint(0, nb_points ,nb_shifts) # choose random points
-# surface1[shifts_indices] = get_shifted_points(shifts_indices, nb_points, r + shift_parameter, 0, 0)
-
-# create_3d(surface1)
 
 
 
