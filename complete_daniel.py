@@ -252,7 +252,7 @@ def create_one_small_star():
 		out = xy
 		# axarr[4, 1].plot(out[:, 0], out[:, 1])
 		# axarr[4, 1].scatter(average_point[0], average_point[1], c = 'red')
-	create_3d(out, save_dir + 'row_' + str(5) + 'colmn_' + str(2) + '.obj')
+	#create_3d(out, save_dir + 'row_' + str(5) + 'colmn_' + str(2) + '.obj')
 	return out
 
 main = False
