@@ -153,9 +153,11 @@ def create_uvmap(surface): # make this one for the whole side surface!
 def create_3d_for_list(surface1_list, save_name = 'first_complex.obj'):
 	# get all vertices, uv_map vertices and all triangles, then concatenate them together
 	surface1 = surface1_list[0]
+	print('surface1 without origin: ', surface1)
 	surfaces_vertices, surfaces_all_triangles, surfaces_uv_vertices = create_single_3d(surface1)
 	last_vertices_index = len(surfaces_vertices) # not sure for +1 or +2 or +0...
 	last_uv_index = len(surfaces_uv_vertices)
+	surfaces_vertices[:, 0] += 5 
 	# print('first object vertices: ', surfaces_vertices)
 	print('uv vertices of object: 0 :', surfaces_uv_vertices)
 	for i in range(1, len(surface1_list)):
@@ -163,7 +165,8 @@ def create_3d_for_list(surface1_list, save_name = 'first_complex.obj'):
 		surface1 = surface1_list[i]
 		print('last_vertices_index: ', last_vertices_index)
 		# vertices, all_triangles, uv_vertices = create_single_3d(surface1, origin = np.array([[i*0.5, 0]]), start_index = last_vertices_index, start_uv_index = last_uv_index)
-		vertices, all_triangles, uv_vertices = create_single_3d(surface1, origin = np.array([[i*0.5, 0]]), start_index = last_vertices_index, start_uv_index = last_uv_index)
+		vertices, all_triangles, uv_vertices = create_single_3d(surface1, start_index = last_vertices_index, start_uv_index = last_uv_index)
+		vertices[:, 0] += 5 + i * 1.5
 		print('uv vertices of object: ',i ,':', uv_vertices)
 		surfaces_vertices = np.concatenate([surfaces_vertices, vertices], axis = 0)
 		surfaces_all_triangles = np.concatenate([surfaces_all_triangles, all_triangles], axis = 0)
@@ -171,9 +174,9 @@ def create_3d_for_list(surface1_list, save_name = 'first_complex.obj'):
 		last_vertices_index += len(vertices)
 		last_uv_index += len(uv_vertices)
 	write_on_obj(surfaces_vertices, surfaces_all_triangles, surfaces_uv_vertices, save_name)
-	plt.figure()
-	plt.scatter(surfaces_uv_vertices[:, 0], surfaces_uv_vertices[:, 1])
-	plt.show()
+	# plt.figure()
+	# plt.scatter(surfaces_uv_vertices[:, 0], surfaces_uv_vertices[:, 1])
+	# plt.show()
 
 def create_3d(surface1, save_name = 'first_3d.obj'): # this function should return only what we need for creating 3d
 	third_dimension_bias = 0.9 # must stay less than 1
@@ -189,6 +192,7 @@ def create_3d(surface1, save_name = 'first_3d.obj'): # this function should retu
 	#
 
 	# fig = plt.figure()
+
 	uv_side_surface, uv_surface1, uv_surface2 = create_uvmap(surface1_for_uvmap)
 	# plt.scatter(uv_side_surface[:, 0], uv_side_surface[:, 1])
 	# plt.scatter(uv_surface1[:, 0], uv_surface1[:, 1])
