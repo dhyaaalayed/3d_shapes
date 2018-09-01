@@ -133,6 +133,7 @@ def create_uvmap(surface): # make this one for the whole side surface!
 	normal_surface1[:,1] -= 0.7
 	normal_surface1[:,0] += 1
 	normal_surface2 = np.copy(normal_surface1)
+	normal_surface1 *= 0.85 # make the upper surface smaller than the buttom one
 	normal_surface2[:,0] += 2.2
 	side_surface = np.concatenate((upper_points, lower_points), axis = 0)
 	# plt.scatter(points[:, 0], points[:, 1])
@@ -161,6 +162,7 @@ def create_3d_for_list(surface1_list, save_name = 'first_complex.obj'):
 		print('I am in the loop')
 		surface1 = surface1_list[i]
 		print('last_vertices_index: ', last_vertices_index)
+		# vertices, all_triangles, uv_vertices = create_single_3d(surface1, origin = np.array([[i*0.5, 0]]), start_index = last_vertices_index, start_uv_index = last_uv_index)
 		vertices, all_triangles, uv_vertices = create_single_3d(surface1, origin = np.array([[i*0.5, 0]]), start_index = last_vertices_index, start_uv_index = last_uv_index)
 		print('uv vertices of object: ',i ,':', uv_vertices)
 		surfaces_vertices = np.concatenate([surfaces_vertices, vertices], axis = 0)
@@ -168,10 +170,10 @@ def create_3d_for_list(surface1_list, save_name = 'first_complex.obj'):
 		surfaces_uv_vertices = np.concatenate([surfaces_uv_vertices, uv_vertices], axis = 0)
 		last_vertices_index += len(vertices)
 		last_uv_index += len(uv_vertices)
+	write_on_obj(surfaces_vertices, surfaces_all_triangles, surfaces_uv_vertices, save_name)
 	plt.figure()
 	plt.scatter(surfaces_uv_vertices[:, 0], surfaces_uv_vertices[:, 1])
 	plt.show()
-	write_on_obj(surfaces_vertices, surfaces_all_triangles, surfaces_uv_vertices, save_name)
 
 def create_3d(surface1, save_name = 'first_3d.obj'): # this function should return only what we need for creating 3d
 	third_dimension_bias = 0.9 # must stay less than 1
