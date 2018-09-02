@@ -32,9 +32,9 @@ stars_list = []
 stars_list.append(star1)
 stars_list.append(star2)
 stars_list.append(star3)
-stars_list.append(star4)
-stars_list.append(star5)
+# stars_list.append(star4)
+# stars_list.append(star5)
 
-create_3d_for_list(stars_list, shift_x_between = 0.8)
+create_3d_for_list(stars_list, shift_x_between = 0.5) # shift_y_between should also be added
 
 plt.show()

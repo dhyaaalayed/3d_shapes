@@ -9,6 +9,7 @@ from scipy import interpolate
 from one_3d_func import *
 from big_square import *
 
+all_shapes_global = [] # list of all shapes
 
 def get_points(h, k, r, nb_points): # h and k are the origin axis
 	points = []
@@ -169,7 +170,9 @@ def create_stars():
 
 
 		out *= 1/5 # to scall it like  others
+		out *= 2 # for the merged object
 		#create_3d(out, save_dir + 'row_' + str(i + 2) + 'colmn_' + str(j + 1) + '.obj')
+		all_shapes_global.append(out)
 		create_single_3d(out, save_name = save_dir + 'row_' + str(i + 2) + 'colmn_' + str(j + 1) + '.obj')
 		#print('out: ', out)
 		#axarr[i,j].scatter(out[0], out[1])
@@ -256,6 +259,14 @@ def create_one_small_star():
 	create_single_3d(out, save_name = save_dir + 'row_' + str(5) + 'colmn_' + str(2) + '.obj')
 	return out
 
+def create_one_complex_object(all_shapes, number_of_objects = 0):
+	# convert all_shapes to numpy:
+	print('before conversion: ', len(all_shapes))
+	all_shapes = np.array(all_shapes) # maybe it needs to be reshaped (-1, +1)
+	print('after conversion: ', all_shapes.shape)
+	print('one shape: ', all_shapes[0])
+	create_3d_for_list(all_shapes[14:19], save_name = 'complex_daniel.obj', shift_x_between = 1.9)
+
 main = True
 if main == True:
 	nb_colmns = 5
@@ -304,7 +315,8 @@ if main == True:
 			#axarr[i,j].plot(x, y, 'x', out[:, 0], out[:, 1])
 			axarr[i,j].plot(out[:, 0], out[:, 1])
 			axarr[i,j].scatter(xy[shifts_indices, 0], xy[shifts_indices, 1], c = 'red')
-	
+			
+			all_shapes_global.append(out)
 			create_single_3d(out, save_name = save_dir + 'row_' + str(i + 1) + 'colmn_' + str(j + 1) + '.obj')
 			#print('out: ', out)
 			#axarr[i,j].scatter(out[0], out[1])
@@ -329,10 +341,11 @@ if main == True:
 
 	create_stars()
 	create_small_stars()
-	get_squares_row(axarr, 5)
-	get_moreno_row(axarr, 6)
+	# get_squares_row(axarr, 5)
+	# get_moreno_row(axarr, 6)
 	create_one_small_star()
-	
+	# create_one_complex_object(all_shapes)
+	create_objects_matrix(all_shapes_global, shift_x_between = 2, shift_y_between = 2)
 	plt.savefig('shapes.jpg')
 	plt.show()
 

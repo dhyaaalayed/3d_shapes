@@ -142,7 +142,7 @@ def create_uvmap(surface): # make this one for the whole side surface!
 	side_surface[:, 0] *= 0.7
 	# normal_surface2 = np.copy(normal_surface1)
 	#### end to try
-	normal_surface2 *= 1.0/0.85 # Increase it's area according to the difference between it and the upper surface
+	#normal_surface2 *= 1.0/0.85 # Increase it's area according to the difference between it and the upper surface
 	return side_surface, normal_surface1, normal_surface2 # delete the closing circle point
 
 def create_3d_for_list(surface1_list, save_name = 'first_complex.obj', shift_x_between = 1.5):
@@ -151,7 +151,11 @@ def create_3d_for_list(surface1_list, save_name = 'first_complex.obj', shift_x_b
 	surfaces_vertices, surfaces_all_triangles, surfaces_uv_vertices = create_single_3d(surface1)
 	last_vertices_index = len(surfaces_vertices) # not sure for +1 or +2 or +0...
 	last_uv_index = len(surfaces_uv_vertices)
+	print('shape of surfaces_vertices: ', surfaces_vertices.shape)
+	print('shape of surfaces_all_triangles: ', surfaces_all_triangles.shape)
+	print('shape of surfaces_uv_vertices: ', surfaces_uv_vertices.shape)
 	# print('first object vertices: ', surfaces_vertices)
+	print('complex daniel length: ', len(surface1_list))
 	for i in range(1, len(surface1_list)):
 		surface1 = surface1_list[i]
 		# vertices, all_triangles, uv_vertices = create_single_3d(surface1, origin = np.array([[i*0.5, 0]]), start_index = last_vertices_index, start_uv_index = last_uv_index)
@@ -168,6 +172,35 @@ def create_3d_for_list(surface1_list, save_name = 'first_complex.obj', shift_x_b
 	plt.figure()
 	plt.scatter(surfaces_uv_vertices[:, 0], surfaces_uv_vertices[:, 1])
 	plt.show()
+
+def create_objects_matrix(surface1_list, save_name = 'complex_matrix.obj', shift_x_between = 1.5, shift_y_between = 1.5):
+	# inital code:
+	surfaces_vertices = np.array([], dtype=np.int64).reshape(0, 4)
+	surfaces_all_triangles = np.array([], dtype=np.int64).reshape(0, )
+	surfaces_uv_vertices = np.array([], dtype=np.int64).reshape(0, 3)
+	last_vertices_index = 0
+	last_uv_index = 0
+
+	#surface1_list = np.array(surface1_list)[-6]
+	print('size of the list: ', len(surface1_list))
+	for i in range(3):
+		for j in range(3):
+			print('The current index: ', 11 + i * 3 + j)
+			surface1 = surface1_list[11 + i * 3 + j]
+			vertices, all_triangles, uv_vertices = create_single_3d(surface1, start_index = last_vertices_index, start_uv_index = last_uv_index)
+			# vertices, all_triangles, uv_vertices = create_single_3d(surface1, origin = np.array([[i*0.5, 0]]), start_index = last_vertices_index, start_uv_index = last_uv_index)
+			vertices[:, 0] += i * shift_x_between
+			uv_vertices[:, 0] += i * shift_x_between * 0.15
+			vertices[:, 1] += j * shift_y_between
+			uv_vertices[:, 1] += j * shift_y_between * 0.15			
+			#print('uv vertices of object: ',i ,':', uv_vertices)
+			surfaces_vertices = np.concatenate([surfaces_vertices, vertices], axis = 0)
+			surfaces_all_triangles = np.concatenate([surfaces_all_triangles, all_triangles], axis = 0)
+			surfaces_uv_vertices = np.concatenate([surfaces_uv_vertices, uv_vertices], axis = 0)
+			last_vertices_index += len(vertices)
+			last_uv_index += len(uv_vertices)
+		write_on_obj(surfaces_vertices, surfaces_all_triangles, surfaces_uv_vertices, save_name)
+
 
 def create_3d(surface1, save_name = 'first_3d.obj'): # this function should return only what we need for creating 3d
 	third_dimension_bias = 0.9 # must stay less than 1
@@ -284,7 +317,7 @@ def create_3d(surface1, save_name = 'first_3d.obj'): # this function should retu
 def create_single_3d(surface1, save_name = 'first_3d.obj', origin = np.array([[0, 0]]), start_index = 0, start_uv_index = 0): # this function should return only what we need for creating 3d
 	third_dimension_bias = 0.9 # must stay less than 1
 	surface2 = np.copy(surface1)
-	surface1 *= 0.85 # make the buttom surface bigger
+	#surface1 *= 0.85 # make the buttom surface bigger
 	# surface1 = np.append(surface1, [surface1[0]], axis = 0) # to close the circle: still important for the last triangle!
 	print('why surface1: ', surface1)
 	print('why origin: ', origin)
