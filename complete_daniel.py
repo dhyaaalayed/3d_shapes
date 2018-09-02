@@ -169,7 +169,8 @@ def create_stars():
 
 
 		out *= 1/5 # to scall it like  others
-		create_3d(out, save_dir + 'row_' + str(i + 2) + 'colmn_' + str(j + 1) + '.obj')
+		#create_3d(out, save_dir + 'row_' + str(i + 2) + 'colmn_' + str(j + 1) + '.obj')
+		create_single_3d(out, save_name = save_dir + 'row_' + str(i + 2) + 'colmn_' + str(j + 1) + '.obj')
 		#print('out: ', out)
 		#axarr[i,j].scatter(out[0], out[1])
 		
@@ -224,7 +225,7 @@ def create_small_stars():
 		axarr[i + 2,j].scatter(xy[:, 0], xy[:, 1], c = 'green')
 		axarr[i + 2,j].scatter(xy[shifts_indices, 0], xy[shifts_indices, 1], c = 'red')
 		#out *= 1/5 # to scall it like  others
-		create_3d(out, save_dir + 'row_' + str(5) + 'colmn_' + str(j + 1) + '.obj')
+		create_single_3d(out, save_name = save_dir + 'row_' + str(5) + 'colmn_' + str(j + 1) + '.obj')
 
 		#nb_points += 2
 		#nb_shifts += 1 # this should has a random range
@@ -250,12 +251,12 @@ def create_one_small_star():
 		x = xy[:,0]	
 		y = xy[:,1]		
 		out = xy
-		# axarr[4, 1].plot(out[:, 0], out[:, 1])
-		# axarr[4, 1].scatter(average_point[0], average_point[1], c = 'red')
-	#create_3d(out, save_dir + 'row_' + str(5) + 'colmn_' + str(2) + '.obj')
+		axarr[4, 1].plot(out[:, 0], out[:, 1])
+		axarr[4, 1].scatter(average_point[0], average_point[1], c = 'red')
+	create_single_3d(out, save_name = save_dir + 'row_' + str(5) + 'colmn_' + str(2) + '.obj')
 	return out
 
-main = False
+main = True
 if main == True:
 	nb_colmns = 5
 	nb_rows = 3
@@ -304,7 +305,7 @@ if main == True:
 			axarr[i,j].plot(out[:, 0], out[:, 1])
 			axarr[i,j].scatter(xy[shifts_indices, 0], xy[shifts_indices, 1], c = 'red')
 	
-			create_3d(out, save_dir + 'row_' + str(i + 1) + 'colmn_' + str(j + 1) + '.obj')
+			create_single_3d(out, save_name = save_dir + 'row_' + str(i + 1) + 'colmn_' + str(j + 1) + '.obj')
 			#print('out: ', out)
 			#axarr[i,j].scatter(out[0], out[1])
 			
@@ -325,6 +326,7 @@ if main == True:
 				shift_parameter -= signal * shift_value # this should be smaller than rs
 		nb_lines += 1
 	## stars code:
+
 	create_stars()
 	create_small_stars()
 	get_squares_row(axarr, 5)

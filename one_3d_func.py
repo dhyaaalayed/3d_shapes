@@ -281,11 +281,13 @@ def create_3d(surface1, save_name = 'first_3d.obj'): # this function should retu
 	write_on_obj(Vertices, all_triangles, uv_vertices, save_name)
 
 
-def create_single_3d(surface1, origin = np.array([[0, 0]]), start_index = 0, start_uv_index = 0): # this function should return only what we need for creating 3d
+def create_single_3d(surface1, save_name = 'first_3d.obj', origin = np.array([[0, 0]]), start_index = 0, start_uv_index = 0): # this function should return only what we need for creating 3d
 	third_dimension_bias = 0.9 # must stay less than 1
 	surface2 = np.copy(surface1)
 	surface1 *= 0.85 # make the buttom surface bigger
 	# surface1 = np.append(surface1, [surface1[0]], axis = 0) # to close the circle: still important for the last triangle!
+	print('why surface1: ', surface1)
+	print('why origin: ', origin)
 	surface1 = np.append(origin, surface1, axis = 0) # add the origin as the first vertex
 	surface1_for_uvmap = np.copy(surface1)
 	
@@ -367,6 +369,7 @@ def create_single_3d(surface1, origin = np.array([[0, 0]]), start_index = 0, sta
 		axis = 0)
 	#uv_vertices = np.concatenate([uv_surface1[:-1], uv_surface2[:-1], uv_upper_side_points, uv_lower_side_points], axis = 0)
 	uv_vertices = np.concatenate([uv_surface1[:-1], uv_surface2[:-1], uv_upper_side_points, uv_lower_side_points], axis = 0)
+	write_on_obj(Vertices, all_triangles, uv_vertices, save_name)
 	return Vertices, all_triangles, uv_vertices
 
 

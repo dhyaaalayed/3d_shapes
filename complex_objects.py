@@ -2,13 +2,13 @@ from complete_daniel import *
 from rotate import *
 
 star1 = create_one_small_star()
-# star1 = rotate_polygon(star1, 40)
+star1 = rotate_polygon(star1, 40)
 star2 = create_one_small_star()
-# star2 = rotate_polygon(star2, 70)
+star2 = rotate_polygon(star2, 70)
 star3 = create_one_small_star()
-# star3 = rotate_polygon(star3, 60)
+star3 = rotate_polygon(star3, 60)
 star4 = create_one_small_star()
-# star4 = rotate_polygon(star4, 90)
+star4 = rotate_polygon(star4, 90)
 star5 = create_one_small_star()
 
 
