@@ -35,6 +35,6 @@ stars_list.append(star3)
 stars_list.append(star4)
 stars_list.append(star5)
 
-create_3d_for_list(stars_list)
+create_3d_for_list(stars_list, shift_x_between = 0.8)
 
 plt.show()
