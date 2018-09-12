@@ -173,6 +173,59 @@ def create_3d_for_list(surface1_list, save_name = 'first_complex.obj', shift_x_b
 	plt.scatter(surfaces_uv_vertices[:, 0], surfaces_uv_vertices[:, 1])
 	plt.show()
 
+def create_round_matrix(shape, save_name = 'complex_squares_matrix_exp.obj', nb_rows = 4, nb_colmns = 4):
+	# shape_list = np.repeat([shape], 9)
+	shape_list = [shape] * nb_colmns
+	shape_list = np.array(shape_list)
+	print('new shape:', shape_list.shape)
+	shape_list_matrix = nb_rows * [shape_list]
+	shape_list_matrix = np.array(shape_list_matrix)
+	print('new shape matrix: ', shape_list_matrix.shape)
+
+	print('before None: ', shape_list_matrix[0, 0])
+	shape_list_matrix[0, 0] = None
+	shape_list_matrix[0, 2] = None
+	shape_list_matrix[1, 1] = None
+	shape_list_matrix[1, 2] = None
+
+	if shape_list_matrix[0, 0].all() == None:
+		print('after None: ', shape_list_matrix[0, 0])
+	# 1- reshape into a 2d array
+	# 2- random deletion
+		# set null and configure the create matrix function
+
+	# create_objects_matrix(shape_list, save_name = 'round_matrix.obj', shift_x_between = 0.8, shift_y_between = 0.8)
+	create_round_squares_matrix_3d(shape_list_matrix, save_name = save_name)
+
+
+def create_round_squares_matrix_3d(surface1_list, save_name = 'complex_squares_matrix.obj', shift_x_between = 0.8, shift_y_between = 0.8):
+	# inital code:
+	surfaces_vertices = np.array([], dtype=np.int64).reshape(0, 4)
+	surfaces_all_triangles = np.array([], dtype=np.int64).reshape(0, )
+	surfaces_uv_vertices = np.array([], dtype=np.int64).reshape(0, 3)
+	last_vertices_index = 0
+	last_uv_index = 0
+	for i in range(surface1_list.shape[0]):
+		for j in range(surface1_list.shape[1]):
+			if surface1_list[i, j].all() != None:
+				surface1 = surface1_list[i][j]
+				print('one surface1: ', surface1)
+				vertices, all_triangles, uv_vertices = create_single_3d(surface1, start_index = last_vertices_index, start_uv_index = last_uv_index)
+				vertices[:, 0] += i * shift_x_between
+				uv_vertices[:, 0] += i * shift_x_between * 0.15
+				vertices[:, 1] += j * shift_y_between
+				uv_vertices[:, 1] += j * shift_y_between * 0.15			
+				#print('uv vertices of object: ',i ,':', uv_vertices)
+				surfaces_vertices = np.concatenate([surfaces_vertices, vertices], axis = 0)
+				surfaces_all_triangles = np.concatenate([surfaces_all_triangles, all_triangles], axis = 0)
+				surfaces_uv_vertices = np.concatenate([surfaces_uv_vertices, uv_vertices], axis = 0)
+				last_vertices_index += len(vertices)
+				last_uv_index += len(uv_vertices)
+	write_on_obj(surfaces_vertices, surfaces_all_triangles, surfaces_uv_vertices, save_name)
+
+
+
+
 def create_objects_matrix(surface1_list, save_name = 'complex_matrix.obj', shift_x_between = 1.5, shift_y_between = 1.5):
 	# inital code:
 	surfaces_vertices = np.array([], dtype=np.int64).reshape(0, 4)
@@ -185,8 +238,8 @@ def create_objects_matrix(surface1_list, save_name = 'complex_matrix.obj', shift
 	print('size of the list: ', len(surface1_list))
 	for i in range(3):
 		for j in range(3):
-			print('The current index: ', 11 + i * 3 + j)
-			surface1 = surface1_list[11 + i * 3 + j]
+			print('The current index: ', 0 + i * 3 + j)
+			surface1 = surface1_list[0 + i * 3 + j]
 			vertices, all_triangles, uv_vertices = create_single_3d(surface1, start_index = last_vertices_index, start_uv_index = last_uv_index)
 			# vertices, all_triangles, uv_vertices = create_single_3d(surface1, origin = np.array([[i*0.5, 0]]), start_index = last_vertices_index, start_uv_index = last_uv_index)
 			vertices[:, 0] += i * shift_x_between
@@ -199,7 +252,7 @@ def create_objects_matrix(surface1_list, save_name = 'complex_matrix.obj', shift
 			surfaces_uv_vertices = np.concatenate([surfaces_uv_vertices, uv_vertices], axis = 0)
 			last_vertices_index += len(vertices)
 			last_uv_index += len(uv_vertices)
-		write_on_obj(surfaces_vertices, surfaces_all_triangles, surfaces_uv_vertices, save_name)
+	write_on_obj(surfaces_vertices, surfaces_all_triangles, surfaces_uv_vertices, save_name)
 
 
 def create_3d(surface1, save_name = 'first_3d.obj'): # this function should return only what we need for creating 3d

@@ -8,6 +8,7 @@ from random import randint
 from scipy import interpolate
 from one_3d_func import *
 from big_square import *
+from rotate import *
 
 all_shapes_global = [] # list of all shapes
 
@@ -267,7 +268,42 @@ def create_one_complex_object(all_shapes, number_of_objects = 0):
 	print('one shape: ', all_shapes[0])
 	create_3d_for_list(all_shapes[14:19], save_name = 'complex_daniel.obj', shift_x_between = 1.9)
 
-main = True
+def curve_some_points(xy, step = 0.2, k = 1):
+	x = xy[:,0]	
+	y = xy[:,1]
+	tck, u = interpolate.splprep([x, y], s=0, k = k)
+	unew = np.arange(0, 1.01, step) # from 0 to 1.01 with step 0.01 [the number of points]
+	out = interpolate.splev(unew, tck) # a circle of 101 points
+	out = np.array(out).T
+	return out	
+
+def create_round_square():
+	upper_left_round = np.array([[0.4, 0], [0, 0], [0, -0.4]])
+	upper_left_round = curve_some_points(upper_left_round)
+	upper_left_round = curve_some_points(upper_left_round, step = 0.04, k = 1)
+	# shifting the shape origin to the (0, 0)
+	upper_left_round[:, 0] -= 0.5 
+	upper_left_round[:, 1] -= -0.5
+	# creating other corners
+	upper_right_round = rotate_polygon(upper_left_round, -90)
+	buttom_left_round = rotate_polygon(upper_left_round, +90)
+	buttom_right_round = rotate_polygon(upper_left_round, +180)
+	xy = np.concatenate([upper_left_round, buttom_left_round,
+		buttom_right_round, upper_right_round], axis = 0)
+	xy = np.append(xy, [xy[0]], axis = 0) # close the circle
+	out = xy
+	print('out.shape: ', out.shape)
+	# plt.plot(out[:, 0], out[:, 1])
+	# plt.scatter(out[:, 0], out[:, 1], c = 'red')
+	# plt.show()
+	#create_single_3d(out, save_name = save_dir + 'row_' + str(5) + 'colmn_' + str(2) + '.obj')
+	#create_single_3d(out, save_name = 'first_round_square.obj')
+	return out
+
+
+one_shape = create_round_square()
+create_round_matrix(one_shape)
+main = False
 if main == True:
 	nb_colmns = 5
 	nb_rows = 3
