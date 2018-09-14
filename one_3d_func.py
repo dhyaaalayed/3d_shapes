@@ -209,9 +209,11 @@ def create_round_squares_matrix_3d(surface1_list, save_name = 'complex_squares_m
 		for j in range(surface1_list.shape[1]):
 			if surface1_list[i, j].all() != None:
 				surface1 = surface1_list[i][j]
-				print('one surface1: ', surface1)
+				
+				#plt.plot(surface1[:, 0] + i * shift_x_between, surface1[:, 1] + j * shift_y_between)
 				vertices, all_triangles, uv_vertices = create_single_3d(surface1, start_index = last_vertices_index, start_uv_index = last_uv_index)
 				vertices[:, 0] += i * shift_x_between
+
 				uv_vertices[:, 0] += i * shift_x_between * 0.15
 				vertices[:, 1] += j * shift_y_between
 				uv_vertices[:, 1] += j * shift_y_between * 0.15			
@@ -221,8 +223,10 @@ def create_round_squares_matrix_3d(surface1_list, save_name = 'complex_squares_m
 				surfaces_uv_vertices = np.concatenate([surfaces_uv_vertices, uv_vertices], axis = 0)
 				last_vertices_index += len(vertices)
 				last_uv_index += len(uv_vertices)
+	
 	write_on_obj(surfaces_vertices, surfaces_all_triangles, surfaces_uv_vertices, save_name)
-
+	return surfaces_vertices
+	#plt.show()
 
 
 
@@ -372,8 +376,6 @@ def create_single_3d(surface1, save_name = 'first_3d.obj', origin = np.array([[0
 	surface2 = np.copy(surface1)
 	#surface1 *= 0.85 # make the buttom surface bigger
 	# surface1 = np.append(surface1, [surface1[0]], axis = 0) # to close the circle: still important for the last triangle!
-	print('why surface1: ', surface1)
-	print('why origin: ', origin)
 	surface1 = np.append(origin, surface1, axis = 0) # add the origin as the first vertex
 	surface1_for_uvmap = np.copy(surface1)
 	

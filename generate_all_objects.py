@@ -7,7 +7,6 @@ import math
 from random import randint
 from scipy import interpolate
 from one_3d_func import *
-from big_square import *
 from rotate import *
 
 all_shapes_global = [] # list of all shapes
@@ -301,6 +300,7 @@ def create_round_square():
 	return out
 
 
+# from before:
 one_shape = create_round_square()
 create_round_matrix(one_shape)
 main = False
